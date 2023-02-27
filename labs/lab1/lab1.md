@@ -57,7 +57,7 @@ def read_txt(args):
 
 通过命令行键入 `train_index`来确认哪些是验证集哪些作为验证集。由于实验要求前450作为训练集，因此这里不用k折交叉验证。
 
-**2.使用梯度下降法进行参数拟合**
+#### **2.使用梯度下降法进行参数拟合**
 
 ```python
  def step_by_gradient(self,dloss,x):
@@ -182,7 +182,7 @@ self.params = self.params - self.lr * np.dot(x,dloss)
 
 
 
-#### 3.数据打乱
+#### 3.数据打乱&命令行参数设置
 
 为了不让训练的数据学习到输入数据的顺序特征，在训练时，编写了`split_data.py`设置shuffle参数为True可以对数据和标签进行随机打乱重排，为了就是增加泛化程度并抑制一定过拟合。
 
@@ -193,6 +193,38 @@ self.params = self.params - self.lr * np.dot(x,dloss)
         data = origin_data[:,:-1]
         labels = origin_data[:,-1]
         return data,labels
+```
+
+为了优雅的调试，浅浅做了一个命令行。
+
+参数:数据路径`data`,分割索引`split`,参数更新方式`update`,最大训练轮数`epochs`,检查点载入路径`ckpg`
+
+```python
+import argparse
+from linear_regression import LinearRegression
+from  data_preprocess import read_txt
+def parse_args():
+    parser = argparse.ArgumentParser(description='Train')
+    parser.add_argument('--data', help='data file path')
+    parser.add_argument('--split', help='split index')
+    parser.add_argument('--update', help='update type')
+    parser.add_argument('--epochs', help='max epochs to train')
+    parser.add_argument('--ckpg', help='max epochs to train')
+
+    args = parser.parse_args()
+    return args
+
+
+if __name__ == '__main__':
+    args = parse_args()
+    train_data,test_data = read_txt(args)
+    if args.ckpg is None:
+        net = LinearRegression(train_data, test_data)
+    else:
+        net = LinearRegression(train_data, test_data,load_checkpoint=args.ckpg)
+    net.train(args.epochs)
+    net.test()
+
 ```
 
 
