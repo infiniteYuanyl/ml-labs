@@ -1,0 +1,26 @@
+import argparse
+from linear_regression import LinearRegression
+from  data_preprocess import read_txt
+def parse_args():
+    parser = argparse.ArgumentParser(description='Train')
+    parser.add_argument('--data', help='data file path')
+    parser.add_argument('--split', help='split index')
+    parser.add_argument('--update', help='update type')
+    parser.add_argument('--epochs', help='max epochs to train')
+    parser.add_argument('--ckpg', help='max epochs to train')
+
+    args = parser.parse_args()
+    return args
+
+
+if __name__ == '__main__':
+    args = parse_args()
+    train_data,test_data = read_txt(args)
+    if args.ckpg is None:
+        net = LinearRegression(train_data, test_data)
+    else:
+        net = LinearRegression(train_data, test_data,load_checkpoint=args.ckpg)
+    net.train(args.epochs)
+    net.test()
+
+    
