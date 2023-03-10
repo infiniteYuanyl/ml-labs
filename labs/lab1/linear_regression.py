@@ -46,8 +46,8 @@ class LinearRegression:
 
         dloss = (predict - label)
         if self.eval:
-            print('Acc:',(1-abs(dloss)/label)*100)
-            self.Acc+=(1-abs(dloss)/label)*100
+            print('Acc:',(1-abs(np.mean(dloss))/label)*100)
+            self.Acc+=(1-abs(np.mean(dloss))/label)*100
         
         # print('dloss: ',dloss.shape)
         return loss,dloss
@@ -63,13 +63,25 @@ class LinearRegression:
         pass
     def step_by_gradient(self,dloss,x):
         #print(self.lr * np.dot(x,dloss))
-        self.params = self.params - self.lr * np.dot(x,dloss)
+        #print(dloss.shape)
 
-    def forward(self,x,idx,labels,eval=False):
+        self.params = self.params - self.lr * np.dot(x.T,dloss)/self.train_data.shape[0]
+
+    def forward_single(self,x,idx,labels,eval=False):
         #predict 为一个1 * 1 的数
+
         predict = np.dot(x.T,self.params)
         # print('predict',predict.shape)
         loss,dloss = self.MSEloss(predict,labels[idx])
+        if not eval :
+            self.update_params(dloss,x)
+        return 0
+    def forward(self,x,labels,eval=False):
+        #predict 为一个1 * 1 的数
+        #print(x.shape)
+        predict = np.dot(x,self.params)
+        # print('predict',predict.shape)
+        loss,dloss = self.MSEloss(predict,labels)
         if not eval :
             self.update_params(dloss,x)
         return 0
@@ -81,14 +93,9 @@ class LinearRegression:
 
             loss_sum =0.0
             data,labels = self.split_data(self.train_data)
-            for index in range(num):
-                x = data[index,:]
-
-                x = np.append(x,1)
-                # print(x.shape)
-                self.forward(x,index,labels)
-                loss_sum+=float(self.loss)
-            if epoch % 100 ==1:print('epoch: {} MSEloss: {}'.format(epoch+1, 2 * loss_sum/num))
+            data = np.c_[data, np.ones(data.shape[0])]
+            self.forward(data,labels,eval=False)
+            if epoch % 100 ==1:print('epoch: {} MSEloss: {}'.format(epoch+1, self.loss/self.train_data.shape[0]))
             if self.lr >=0.0001:self.lr = self.lr * self.beta
             np.random.shuffle(self.train_data)
             if epoch % 100 ==1:print(self.params)
@@ -96,6 +103,28 @@ class LinearRegression:
         d= datetime.today().strftime('%Y%m%d_%H_%M_%S')
         d.split(' ')
         np.savez('checkpoints/'+d+'_paramsW.npz',W=self.params,LR=self.lr)
+    # def train(self,epochs):
+    #     num = self.train_data.shape[0]
+    #     print('train_num :', num)
+    #     for epoch in range(int(epochs)):
+    # 
+    #         loss_sum =0.0
+    #         data,labels = self.split_data(self.train_data)
+    #         for index in range(num):
+    #             x = data[index,:]
+    # 
+    #             x = np.append(x,1)
+    #             # print(x.shape)
+    #             self.forward(x,index,labels)
+    #             loss_sum+=float(self.loss)
+    #         if epoch % 100 ==1:print('epoch: {} MSEloss: {}'.format(epoch+1, 2 * loss_sum/num))
+    #         if self.lr >=0.0001:self.lr = self.lr * self.beta
+    #         np.random.shuffle(self.train_data)
+    #         if epoch % 100 ==1:print(self.params)
+    #     print('Train over')
+    #     d= datetime.today().strftime('%Y%m%d_%H_%M_%S')
+    #     d.split(' ')
+    #     np.savez('checkpoints/'+d+'_paramsW.npz',W=self.params,LR=self.lr)
     def test(self):
         print('test start')
         loss_sum =0.0
@@ -105,14 +134,27 @@ class LinearRegression:
         num = self.test_data.shape[0]
         self.eval=True
         data, labels = self.split_data(self.test_data,shuffled=True)
-        for index in range(num):
-            x = data[index,:]
-            x = np.append(x, 1)
-            self.forward(x,index,labels,eval=True)
-            print('item {} : loss: {}'.format(index + 1, self.loss))
-            loss_sum +=self.loss
+        data = np.c_[data, np.ones(data.shape[0])]
+        self.forward(data, labels, eval=True)
 
-        print('Test over! MSTloss:{},mAcc: {}'.format(2 * loss_sum / num,self.Acc/num))
+        print('Test over! MSEloss:{},mAcc: {}'.format(self.loss/self.test_data.shape[0],self.Acc))
+    # def test(self):
+    #     print('test start')
+    #     loss_sum =0.0
+    #     print('test cases:',self.test_data.shape[0])
+    #     if self.test_data is None:
+    #         raise ValueError('test_data not loaded!')
+    #     num = self.test_data.shape[0]
+    #     self.eval=True
+    #     data, labels = self.split_data(self.test_data,shuffled=True)
+    #     for index in range(num):
+    #         x = data[index,:]
+    #         x = np.append(x, 1)
+    #         self.forward(x,index,labels,eval=True)
+    #         print('item {} : loss: {}'.format(index + 1, self.loss))
+    #         loss_sum +=self.loss
+    #
+    #     print('Test over! MSTloss:{},mAcc: {}'.format(2 * loss_sum / num,self.Acc/num))
 
 
 

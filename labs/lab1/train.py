@@ -1,6 +1,8 @@
 import argparse
 from linear_regression import LinearRegression
 from  data_preprocess import read_txt
+
+#python train.py --data data/housing_data.txt --split 450 --epochs 1000 
 def parse_args():
     parser = argparse.ArgumentParser(description='Train')
     parser.add_argument('--data', help='data file path')
