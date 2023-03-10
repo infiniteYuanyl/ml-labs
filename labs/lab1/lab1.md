@@ -57,6 +57,10 @@ def read_txt(args):
 
 通过命令行键入 `train_index`来确认哪些是验证集哪些作为验证集。由于实验要求前450作为训练集，因此这里不用k折交叉验证。
 
+**特征归一化**是为了让每个参数的尺度统一，在更新参数的时候不需要考虑参数尺度的因素去调整。如下图所示，如果不归一化，在同一个学习率下，尺度更大的参数w1需要迈更大的步子才能和参数W2持平，不利于我们调参（说白了，如果不归一化，我们要为每个参数设置专门的步长）。归一化有助于我们选择统一的步长（学习率），有利于我们模型的收敛。
+
+![image-20230310230006303](https://yuan-1314071695.cos.ap-nanjing.myqcloud.com/imgimgimage-20230310230006303.png)
+
 #### **2.使用梯度下降法进行参数拟合**
 
 ```python
@@ -132,7 +136,7 @@ def test(self):
 
 最终运行结果。这里使用的loss是 1/2 的MSEloss
 
-![image-20230227223033829](https://yuan-1314071695.cos.ap-nanjing.myqcloud.com/imgimage-20230227223033829.png)
+![image-20230227223033829](https://yuan-1314071695.cos.ap-nanjing.myqcloud.com/imgimgimage-20230227223033829.png)
 
 
 
@@ -146,7 +150,7 @@ self.params = self.params - self.lr * np.dot(x,dloss)
 
 
 
-![image-20230227224949697](https://yuan-1314071695.cos.ap-nanjing.myqcloud.com/imgimage-20230227224949697.png)
+![image-20230227224949697](https://yuan-1314071695.cos.ap-nanjing.myqcloud.com/imgimgimage-20230227224949697.png)
 
 核心公式如上，J为对参数的偏导数，这里就是x × dloss了，α是学习率。由于x就是一个一维向量，因此也不必转置。
 
@@ -178,7 +182,7 @@ self.params = self.params - self.lr * np.dot(x,dloss)
 
 在初始化权重矩阵中可以看出，这里我默认`b`设置为了1.而**训练**的数据输入x也做了相关处理，增加了一维，值为1。下面是书上公式对x的扩充。
 
-![image-20230227230134289](https://yuan-1314071695.cos.ap-nanjing.myqcloud.com/imgimage-20230227230134289.png)
+![image-20230227230134289](https://yuan-1314071695.cos.ap-nanjing.myqcloud.com/imgimgimage-20230227230134289.png)
 
 
 
@@ -239,7 +243,13 @@ if __name__ == '__main__':
 
 并且代码也做了一定修改，实验报告就不放了。组更新结果如下，和单个样本更新结果几乎一样。
 
-![image-20230310204908981](https://yuan-1314071695.cos.ap-nanjing.myqcloud.com/imgimage-20230310204908981.png)
+![image-20230310204908981](https://yuan-1314071695.cos.ap-nanjing.myqcloud.com/imgimgimage-20230310204908981.png)
+
+#### 5.可视化
+
+使用`matplotlib`工具进行训练损失可视化。可见，模型在100epoch时候基本已经收敛。
+
+![image-20230310225730946](https://yuan-1314071695.cos.ap-nanjing.myqcloud.com/imgimgimage-20230310225730946.png)
 
 ## 四、心得体会
 

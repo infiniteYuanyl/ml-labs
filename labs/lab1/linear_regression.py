@@ -2,7 +2,7 @@ import copy
 
 import numpy as np
 from datetime import *
-
+from utils import visualize_2D
 class LinearRegression:
     def __init__(self,train_data,test_data=None,update_type='gradient',load_checkpoint=None):
 
@@ -86,9 +86,10 @@ class LinearRegression:
             self.update_params(dloss,x)
         return 0
 
-    def train(self,epochs):
+    def train(self,epochs,show=False):
         num = self.train_data.shape[0]
         print('train_num :', num)
+        loss_plt = []
         for epoch in range(int(epochs)):
 
             loss_sum =0.0
@@ -96,9 +97,12 @@ class LinearRegression:
             data = np.c_[data, np.ones(data.shape[0])]
             self.forward(data,labels,eval=False)
             if epoch % 100 ==1:print('epoch: {} MSEloss: {}'.format(epoch+1, self.loss/self.train_data.shape[0]))
+            loss_plt.append(copy.deepcopy(self.loss/self.train_data.shape[0]))
             if self.lr >=0.0001:self.lr = self.lr * self.beta
             np.random.shuffle(self.train_data)
             if epoch % 100 ==1:print(self.params)
+        if show:
+            visualize_2D(np.linspace(1,epochs+1,epochs),np.array(loss_plt),'epochs','loss','loss graph')
         print('Train over')
         d= datetime.today().strftime('%Y%m%d_%H_%M_%S')
         d.split(' ')
