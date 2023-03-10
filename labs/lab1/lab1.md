@@ -227,7 +227,19 @@ if __name__ == '__main__':
 
 ```
 
+#### 4.优化代码（2023.3.10更新）
 
+代码原本更新参数的方式是一个样本一个样本更新。但这样训练太慢了，太丑陋了。于是我重写了代码，利用numpy可以进行一组样本一组样本的更新，极大提高了训练速度。
+
+```python
+	data,labels = self.split_data(self.train_data)
+	data = np.c_[data, np.ones(data.shape[0])]
+	self.forward(data,labels,eval=False)
+```
+
+并且代码也做了一定修改，实验报告就不放了。组更新结果如下，和单个样本更新结果几乎一样。
+
+![image-20230310204908981](https://yuan-1314071695.cos.ap-nanjing.myqcloud.com/imgimage-20230310204908981.png)
 
 ## 四、心得体会
 
