@@ -1,4 +1,5 @@
 .idea
 checkpoints/
 __pycache__/
+*.zip
 lab*.md
