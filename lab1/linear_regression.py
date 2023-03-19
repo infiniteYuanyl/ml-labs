@@ -2,6 +2,8 @@ import copy
 
 import numpy as np
 from datetime import *
+import tqdm
+import time
 from utils import visualize_2D
 class LinearRegression:
     def __init__(self,train_data,test_data=None,update_type='gradient',load_checkpoint=None):
@@ -10,10 +12,10 @@ class LinearRegression:
         self.train_data = train_data
         self.test_data = test_data
         self.update_type = update_type
-        self.lr = 0.02
+        self.lr = 0.3
         self.beta = 0.9997
         self.loss = 0.0
-        self.eval=False
+        self.eval = False
         self.Acc = 0.0
         self.load_checkpoint = load_checkpoint
         self.initialize_weight()
@@ -40,7 +42,7 @@ class LinearRegression:
 
 
     def MSEloss(self,predict,label):
-        loss = 0.5 * np.sum((predict - label)**2)
+        loss = np.sum((predict - label)**2)
         # print('loss:',loss)
         self.loss = loss
 
@@ -50,9 +52,9 @@ class LinearRegression:
             self.Acc+=(1-abs(np.mean(dloss))/label)*100
         
         # print('dloss: ',dloss.shape)
-        return loss,dloss
+        return dloss
     def update_params(self,dloss,x):
-        if self.update_type == 'least_squares':
+        if self.update_type == 'min_2squares':
             self.step_by_leastsquare(dloss)
         elif self.update_type == 'gradient':
             self.step_by_gradient(dloss,x)
@@ -71,94 +73,61 @@ class LinearRegression:
         #predict 为一个1 * 1 的数
 
         predict = np.dot(x.T,self.params)
-        # print('predict',predict.shape)
-        loss,dloss = self.MSEloss(predict,labels[idx])
+        
+        _,dloss = self.MSEloss(predict,labels[idx])
         if not eval :
             self.update_params(dloss,x)
         return 0
     def forward(self,x,labels,eval=False):
-        #predict 为一个1 * 1 的数
-        #print(x.shape)
+       
         predict = np.dot(x,self.params)
-        # print('predict',predict.shape)
-        loss,dloss = self.MSEloss(predict,labels)
+        
+        dloss = self.MSEloss(predict,labels)
         if not eval :
             self.update_params(dloss,x)
         return 0
 
     def train(self,epochs,show=False):
         num = self.train_data.shape[0]
+        epochs=int(epochs)
         print('train_num :', num)
         loss_plt = []
-        for epoch in range(int(epochs)):
+        pbar = tqdm.tqdm(range(epochs), ncols=150)       
+        for epoch,_ in enumerate(pbar):
 
-            loss_sum =0.0
+            
             data,labels = self.split_data(self.train_data)
             data = np.c_[data, np.ones(data.shape[0])]
+            start = time.perf_counter()
             self.forward(data,labels,eval=False)
-            if epoch % 100 ==1:print('epoch: {} MSEloss: {}'.format(epoch+1, self.loss/self.train_data.shape[0]))
+            end = time.perf_counter()
+            # if epoch % 100 ==1:print('epoch: {} MSEloss: {}'.format(epoch+1, self.loss/self.train_data.shape[0]))
+            pbar.set_description(f" Train Epoch {epoch+1}/{epochs}")
+            pbar.set_postfix( loss=self.loss/self.train_data.shape[0], lr=str(round(self.lr,4)),cost_time = str(round((end-start)*1000,3)) +'ms')
             loss_plt.append(copy.deepcopy(self.loss/self.train_data.shape[0]))
             if self.lr >=0.0001:self.lr = self.lr * self.beta
             np.random.shuffle(self.train_data)
-            if epoch % 100 ==1:print(self.params)
+            # if epoch % 100 ==1:print(self.params)
         if show:
             visualize_2D(np.linspace(1,epochs+1,epochs),np.array(loss_plt),'epochs','loss','loss graph')
         print('Train over')
         d= datetime.today().strftime('%Y%m%d_%H_%M_%S')
         d.split(' ')
         np.savez('checkpoints/'+d+'_paramsW.npz',W=self.params,LR=self.lr)
-    # def train(self,epochs):
-    #     num = self.train_data.shape[0]
-    #     print('train_num :', num)
-    #     for epoch in range(int(epochs)):
-    # 
-    #         loss_sum =0.0
-    #         data,labels = self.split_data(self.train_data)
-    #         for index in range(num):
-    #             x = data[index,:]
-    # 
-    #             x = np.append(x,1)
-    #             # print(x.shape)
-    #             self.forward(x,index,labels)
-    #             loss_sum+=float(self.loss)
-    #         if epoch % 100 ==1:print('epoch: {} MSEloss: {}'.format(epoch+1, 2 * loss_sum/num))
-    #         if self.lr >=0.0001:self.lr = self.lr * self.beta
-    #         np.random.shuffle(self.train_data)
-    #         if epoch % 100 ==1:print(self.params)
-    #     print('Train over')
-    #     d= datetime.today().strftime('%Y%m%d_%H_%M_%S')
-    #     d.split(' ')
-    #     np.savez('checkpoints/'+d+'_paramsW.npz',W=self.params,LR=self.lr)
+        print('checkpoint has been saved in %s!'%('checkpoints/'+d+'_paramsW.npz'))
+
     def test(self):
         print('test start')
-        loss_sum =0.0
         print('test cases:',self.test_data.shape[0])
         if self.test_data is None:
             raise ValueError('test_data not loaded!')
-        num = self.test_data.shape[0]
         self.eval=True
         data, labels = self.split_data(self.test_data,shuffled=True)
         data = np.c_[data, np.ones(data.shape[0])]
         self.forward(data, labels, eval=True)
 
         print('Test over! MSEloss:{},mAcc: {}'.format(self.loss/self.test_data.shape[0],self.Acc))
-    # def test(self):
-    #     print('test start')
-    #     loss_sum =0.0
-    #     print('test cases:',self.test_data.shape[0])
-    #     if self.test_data is None:
-    #         raise ValueError('test_data not loaded!')
-    #     num = self.test_data.shape[0]
-    #     self.eval=True
-    #     data, labels = self.split_data(self.test_data,shuffled=True)
-    #     for index in range(num):
-    #         x = data[index,:]
-    #         x = np.append(x, 1)
-    #         self.forward(x,index,labels,eval=True)
-    #         print('item {} : loss: {}'.format(index + 1, self.loss))
-    #         loss_sum +=self.loss
-    #
-    #     print('Test over! MSTloss:{},mAcc: {}'.format(2 * loss_sum / num,self.Acc/num))
+   
 
 
 
