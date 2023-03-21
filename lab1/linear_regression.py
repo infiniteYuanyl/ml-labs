@@ -88,9 +88,8 @@ class LinearRegression:
         return 0
 
     def train(self,epochs,show=False):
-        num = self.train_data.shape[0]
+        
         epochs=int(epochs)
-        print('train_num :', num)
         loss_plt = []
         pbar = tqdm.tqdm(range(epochs), ncols=150)       
         for epoch,_ in enumerate(pbar):
