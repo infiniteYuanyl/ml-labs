@@ -29,7 +29,7 @@ feature_names =[{'age':{1:'young',2:'pre-presbyopic',3:'presbyopic'}},\
             {'prescription':{1:'myope',2:'hypermetrope'}},\
             {'astigmatic':{1:'no',2:'yes'}},\
             {'tear_rate':{1:'reduced',2:'normal'}}]
-label_names={1:'hard lenses',2:'soft lenses',3:'no lenses'}
+label_names={1:'hard',2:'soft',3:'no lenses'}
 if __name__ == '__main__':
     args = parse_args()
     data = read_txt(args)
