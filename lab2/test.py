@@ -24,7 +24,7 @@ if __name__ == '__main__':
     args = parse_args()
     data = read_txt(args,split=',')
     dataloader = DataLoader(data,test=True,split_idx=[args.split])
-    print(dataloader)
+    
     net = LinearDiscriminantAnalysis(dataloader = dataloader,epochs=0,load_checkpoint=args.ckpg,is_test=True)
     net.test()  
 
