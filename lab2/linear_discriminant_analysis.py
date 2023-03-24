@@ -77,11 +77,9 @@ class LinearDiscriminantAnalysis(BaseModel):
                   for idx, group in enumerate(self.classes_)]) / (self.samples_num - 1)
         #SVD求Sw的逆矩阵
         U,S,V = np.linalg.svd(Sw)
-        Sn = np.linalg.inv(np.diag(S))
-        Swn = np.dot(np.dot(V.T,Sn),U.T)
-        SwnSb = np.dot(Swn,Sb)
+        Sw = np.dot(np.dot(np.dot(V.T, np.linalg.inv(np.diag(S))), U.T), Sb)
         #求特征值和特征向量，并取实数部分
-        la,vectors = np.linalg.eig(SwnSb)
+        la,vectors = np.linalg.eig(Sw)
         la = np.real(la)
         vectors = np.real(vectors)
         #特征值的下标从大到小排列
@@ -95,8 +93,7 @@ class LinearDiscriminantAnalysis(BaseModel):
         
         self.dparams = w
         self.n_components = n_components
-        # raw_x = np.append(input,labels.reshape(labels.shape[0],1),axis=1)
-        
+       
         
         # #分为0,1两类
         # # print('ooo  ',np.argwhere(raw_x[:,-1]==1).shape)
