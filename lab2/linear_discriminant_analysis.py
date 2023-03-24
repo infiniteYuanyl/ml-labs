@@ -18,7 +18,7 @@ class LinearDiscriminantAnalysis(BaseModel):
         
         self.save_model = self.save_checkpoint
         self.load_checkpoint = load_checkpoint
-        self.lr = 0.01
+        self.lr = 0.01 
         self.is_test = is_test
         self.initialize_params()
 
@@ -73,8 +73,8 @@ class LinearDiscriminantAnalysis(BaseModel):
         
         Sw = self.covariance_
         #求类间平均散度
-        Sb = sum([sum(labels == group)*np.dot((self.input_means[idx,None] - self.input_bar).T, (self.input_means[idx,None] - self.input_bar)) \
-                  for idx, group in enumerate(self.classes_)]) / (self.samples_num - 1)
+        Sb = sum([sum(labels == item)*np.dot((self.input_means[idx,None] - self.input_bar).T, (self.input_means[idx,None] - self.input_bar)) \
+                  for idx, item in enumerate(self.classes_)]) / (self.samples_num - 1)
         #SVD求Sw的逆矩阵
         U,S,V = np.linalg.svd(Sw)
         Sw = np.dot(np.dot(np.dot(V.T, np.linalg.inv(np.diag(S))), U.T), Sb)
@@ -83,12 +83,12 @@ class LinearDiscriminantAnalysis(BaseModel):
         la = np.real(la)
         vectors = np.real(vectors)
         #特征值的下标从大到小排列
-        laIdx = np.argsort(-la)
+        la_idx = np.argsort(-la)
         #默认选取(N-1)个特征值的下标
         
         n_components = len(self.classes_)-1
         #选取特征值和向量
-        lambda_index = laIdx[:n_components]
+        lambda_index = la_idx[:n_components]
         w = vectors[:,lambda_index]
         
         self.dparams = w
