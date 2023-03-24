@@ -66,10 +66,15 @@ class C45DecisionTree(BaseModel):
     def seach_decision_tree(self,input):
         pass
     def create_decision_tree(self,dataset,labels,feature_ids):
+        '''
+        创建决策树，每次返回某一层最优特征的分叉情况，如{本层的特征：
+        {特征值1：{下一层特征或分类结果}，特征值2：{下一层特征或分类结果}，特征值3：{下一层特征或分类结果}，……}}
+        或者标记成叶子节点返回，如{分类结果}
+        '''
         cur_classes = np.unique(labels)
         cur_classes_num = cur_classes.shape[0]
         cur_node = {}
-        #1.如果当前剩下的标签数量只有1个，那么返回这个标签
+        #1.如果当前剩下的标签类别数量只有1个，那么返回这个标签
         if cur_classes_num == 1:
             cur_node=self.label_names[int(labels[0])]
             return cur_node    
@@ -82,7 +87,6 @@ class C45DecisionTree(BaseModel):
         
         #2.如果当前划分的feature_id为空，或者feature_id下的数据集，每个备选特征取值都一样，选择剩余标签中类最多的那个划分。
         if len(feature_ids) == 0 or repeat:
-            print('cut~          ')
             cur_node = self.label_names[np.argmax(np.bincount(labels.astype(np.int32)))]
             return cur_node
         
@@ -112,7 +116,7 @@ class C45DecisionTree(BaseModel):
                 #4.2如果为不存在，即为空，则标记当前样本数量最多类的为该作为该特征值的终结节点
                 cur_node_value.update({list(self.feature_names[best_feature].values())[0][sub_feature]\
                      : self.label_names[np.argmax(np.bincount(labels.astype(np.int32)))]})
-
+        #5. 返回特征节点格式为：{本层的特征：{特征值1：{下一层特征或分类结果}，特征值2：{下一层特征或分类结果}，特征值3：{下一层特征或分类结果}，……}}
         cur_node = {cur_node_key:cur_node_value}
         return cur_node      
     def get_info_gain_rate(self,class_data,feature_ids):
@@ -145,6 +149,9 @@ class C45DecisionTree(BaseModel):
             iv +=   (- feature_id_p * np.log2(feature_id_p))
         return ent_class / iv
     def get_best_feature(self,dataset,labels,features):
+        '''
+        通过数据，标签和备选特征，通过计算选出最优的特征
+        '''
         best_feature = 0
         best_info_gain_rate = 100
         for feature in features:
