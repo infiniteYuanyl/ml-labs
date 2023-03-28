@@ -47,6 +47,7 @@ class C45DecisionTree(BaseModel):
         return None
     def backward(self, diff):
         input,labels = self.dataloader.get_data()
+        print('')
         self.tree_root = self.create_decision_tree(input,labels,list(range(0,input.shape[1])))
         print('tree: ',self.tree_root)
         
@@ -91,9 +92,10 @@ class C45DecisionTree(BaseModel):
             return cur_node
         
         #3.选出信息增益率最高的特征类别
-        best_feature = self.get_best_feature(dataset,labels,feature_ids)
+        best_feature,best_feature_info_gain_rate = self.get_best_feature(dataset,labels,feature_ids)
         cur_feature_dataset = dataset[:,best_feature]
-        cur_feature = np.unique(cur_feature_dataset)     
+        cur_feature = np.unique(cur_feature_dataset)
+        print('当前最佳特征：%s,信息增益率为%f'%(self.feature_names[best_feature],best_feature_info_gain_rate))
 
         #4.当前节点特征确定，作为字典的key；再选取当前节点特征的取值，取值的key和下一棵树上的元素建立映射  
         cur_node_key =  list(self.feature_names[best_feature].keys())[0]    
@@ -129,7 +131,7 @@ class C45DecisionTree(BaseModel):
         class_data_count_p = class_data_count / class_sum
         ent_class = -np.sum((class_data_count_p * np.log2(class_data_count_p)))
         
-        #2.遍历每个特征值的集合，设置iv=-1e-6是防止除0
+        #2.遍历每个特征值的集合，设置iv=1e-8是防止除0
         iv = 1e-8
         for feature_id in feature_ids:
             
@@ -147,13 +149,19 @@ class C45DecisionTree(BaseModel):
             #2.2.获取这个特征值出现的概率
             feature_id_p = feature_id_sum / class_sum
             iv +=   (- feature_id_p * np.log2(feature_id_p))
-        return ent_class / iv
+            
+        return ent_class / iv ,ent_class
     def get_best_feature(self,dataset,labels,features):
         '''
         通过数据，标签和备选特征，通过计算选出最优的特征
         '''
         best_feature = 0
-        best_info_gain_rate = 100
+        best_info_gain_rate = -1
+        info_gains = []#统计备选特征的信息增益
+        info_gain_rates = []#统计备选特征的信息增益率
+        info_gains_sum = 0.0
+        eps = 1e-8 #浮点数比较精度损失
+        
         for feature in features:
             #用当前特征值，把labels划分开来。
             #1.首先，先取出当前特征的列。
@@ -169,15 +177,57 @@ class C45DecisionTree(BaseModel):
             for feature_cls in feature_classes:
                 select_feature_idx.append(np.argwhere(dataset_cut_by_feature == feature_cls).flatten())
             
-            #4.通过每个特征值的索引和labels，可以计算出该特征的信息增益率。
-            info_gain_rate = self.get_info_gain_rate(labels,select_feature_idx)
-        
-            #5.寻找最小信息增益率的特征值
-            if info_gain_rate < best_info_gain_rate:
-                best_info_gain_rate = info_gain_rate
+            #4.通过每个特征值的索引和labels，可以计算出该特征的信息增益和信息增益率。
+            info_gain_rate,info_gain = self.get_info_gain_rate(labels,select_feature_idx)
+            #5.根据启发式规则，需要从候选属性中挑选信息增益高于平均的才能作为最优属性返回，故统计相关信息
+            info_gains.append((feature,info_gain))
+            info_gain_rates.append((feature,info_gain_rate))
+            info_gains_sum+=info_gain
+        #6.筛选高于平均信息增益的候选属性    
+        info_gains_avg = info_gains_sum / len(features)     
+        select_features = []
+        for feature,info_gain in info_gains:
+            #为防止浮点数精度产生问题，比较其差和-1e8的大小(考虑到可能存在每个特征信息增益相等)
+            if info_gain - info_gains_avg > -eps:
+                select_features.append(feature)
+        #7.在这些合格属性中，筛选最高信息增益率的属性和信息增益率
+        for feature,info_gain_rate in info_gain_rates:
+            #这里要求浮点数比较严格大于即可，不加1e8的精度损失问题不大。
+            if feature in select_features and info_gain_rate - best_info_gain_rate > eps:
                 best_feature = feature
+                best_info_gain_rate = info_gain_rate
         
-        return best_feature
+        return best_feature,best_info_gain_rate
+    # def get_best_feature(self,dataset,labels,features):
+    #     '''
+    #     通过数据，标签和备选特征，通过计算选出最优的特征
+    #     '''
+    #     best_feature = 0
+    #     best_info_gain_rate = -1
+    #     for feature in features:
+    #         #用当前特征值，把labels划分开来。
+    #         #1.首先，先取出当前特征的列。
+    #         dataset_cut_by_feature = dataset[:,feature]
+
+    #         #2.取出后，排序并且去重，得到在样本中，该特征所有的出现特征值
+    #         dataset_cut_by_feature_copy = copy.deepcopy(dataset_cut_by_feature)
+    #         np.sort(dataset_cut_by_feature_copy)
+    #         feature_classes = np.unique(dataset_cut_by_feature_copy)
+
+    #         #3.对于每一个特征值，划分开来，返回每个特征值对应原label的索引集合。
+    #         select_feature_idx = []
+    #         for feature_cls in feature_classes:
+    #             select_feature_idx.append(np.argwhere(dataset_cut_by_feature == feature_cls).flatten())
+            
+    #         #4.通过每个特征值的索引和labels，可以计算出该特征的信息增益率。
+    #         info_gain_rate = self.get_info_gain_rate(labels,select_feature_idx)
+    #         print(info_gain_rate)
+    #         #5.寻找最大信息增益率的特征值
+    #         if info_gain_rate > best_info_gain_rate:
+    #             best_info_gain_rate = info_gain_rate
+    #             best_feature = feature
+        
+    #     return best_feature,best_info_gain_rate
 
 
 
