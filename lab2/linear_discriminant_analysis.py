@@ -12,7 +12,7 @@ sys.path.insert(0,UTILS_DIR)
 from base_model import BaseModel
 from loss import MSEloss,Errloss
 from tools import visualize_lda
-class LinearDiscriminantAnalysis(BaseModel):
+class LDA(BaseModel):
     def __init__(self,dataloader,epochs,load_checkpoint=None,is_test=False):
         super().__init__(dataloader,epochs)
         
@@ -120,7 +120,11 @@ class LinearDiscriminantAnalysis(BaseModel):
         # self.dparams = np.dot(Sw_,(miu_pos - miu_neg).T)
     def predict(self,input,labels):
         self.scores = np.dot(input,self.params) 
+        
+        # mean_ += np.log(np.expand_dims(self.priors_, axis=0))
         Sigma = self.covariance_
+        print(Sigma.shape)
+        print(self.input_means.shape)
         U,S,V = np.linalg.svd(Sigma)
         Sn = np.linalg.inv(np.diag(S))
         Sigman = np.dot(np.dot(V.T,Sn),U.T)
@@ -128,7 +132,6 @@ class LinearDiscriminantAnalysis(BaseModel):
         value = np.log(np.expand_dims(self.priors_, axis=0)) - \
         0.5*np.multiply(np.dot(self.input_means, Sigman).T, self.input_means.T).sum(axis=0).reshape(1,-1) + \
         np.dot(np.dot(input, Sigman), self.input_means.T)
-        # print('value ',value)
         return np.argmax(value/np.expand_dims(value.sum(axis=1),1),axis=1)
     def save_checkpoint(self,**kwargs):
         d= datetime.today().strftime('%Y%m%d_%H_%M_%S')

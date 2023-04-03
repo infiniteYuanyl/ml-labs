@@ -7,7 +7,7 @@ import os
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 UTILS_DIR = os.path.join(BASE_DIR, 'utils')
 sys.path.insert(0,UTILS_DIR)
-from  linear_discriminant_analysis import LinearDiscriminantAnalysis
+from  linear_discriminant_analysis import LDA
 from  data_preprocess import read_txt
 from  data_loader import DataLoader
 #python train.py --data data/blood_data.txt --split 600 --epochs 100

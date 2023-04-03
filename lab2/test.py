@@ -5,7 +5,7 @@ import sys
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 UTILS_DIR = os.path.join(BASE_DIR, 'utils')
 sys.path.insert(0,UTILS_DIR)
-from  linear_discriminant_analysis import LinearDiscriminantAnalysis
+from  linear_discriminant_analysis import LDA
 from  data_loader import DataLoader
 from  data_preprocess import read_txt
 #python test.py --data data/blood_data.txt --split 610 --ckpg checkpoints/20230320_21_42_45_paramsW.npz
