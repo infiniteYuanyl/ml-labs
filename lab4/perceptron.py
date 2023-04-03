@@ -27,7 +27,6 @@ class Perceptron(BaseModel):
         self.initialize_params()
 
     def initialize_params(self):
-        # +1 为b的那一项，同时label也需要经过处理
         if self.load_checkpoint is not None:
             with np.load(self.load_checkpoint,allow_pickle=True) as f:
                 self.W = f['W']
