@@ -1,6 +1,6 @@
 from matplotlib import pyplot as plt
 import matplotlib.font_manager as fm
-
+import numpy as np
 
 def visualize_2D(x,y,x_title='',y_title='',title=None):
        plt.ion()  # 打开交互模式
@@ -21,6 +21,38 @@ def visualize_lda(scores,predict):
        ax1.scatter(scores[predict==0],scores[predict==0],c='r',marker='s')
        
        ax1.set_title("LDA")
+       plt.show()
+
+def visualize_perceptron(input,labels,w,theta):
+       fig = plt.figure(figsize=(10,10)) 
+       ax1 = fig.add_subplot(1,1,1)
+       x = np.linspace(-6, 6, 5000, endpoint=True)
+       y = (theta - w[0] * x) / w[1]
+       
+       ax1.scatter(input[labels==1,0],input[labels==1,1],c='b',marker='o')
+       ax1.scatter(input[labels==-1,0],input[labels==-1,1],c='r',marker='s')
+       ax1.scatter(x,y,c='c')
+       ax1.set_title("perceptron")
+       plt.show()
+def visualize_svm(input,labels,w,bias,masks):
+       fig = plt.figure(figsize=(10,10)) 
+       ax1 = fig.add_subplot(1,1,1)
+       x = np.linspace(-1, 8, 5000, endpoint=True)
+       y = (bias + w[0] * x) / -w[1]
+       ax1.scatter(x,y,c='c',linewidth=0.5)
+       print()
+       print('weight:',w.flatten())
+       print('bias:',bias)
+       print('mask_idx',np.where(masks == True))
+       n = input.shape[0]
+       for i in range(n):
+            if masks[i]:
+                x, y = input[i,:]
+                plt.scatter(x, y, s=100, c = 'g', alpha=0.5, linewidth=0.5, edgecolor='purple')
+       ax1.scatter(input[labels==1,0],input[labels==1,1],c='b',marker='o')
+       ax1.scatter(input[labels==-1,0],input[labels==-1,1],c='r',marker='s')
+       
+       ax1.set_title("svm")
        plt.show()
 
 def visualize_decision_tree(inTree):

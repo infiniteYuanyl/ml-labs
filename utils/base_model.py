@@ -14,10 +14,11 @@ class BaseModel(object):
         self.dataloader =  dataloader
         self.train_epochs = epochs
         self.loss =0.0
-        self.lr = 0.02
+        self.lr = 0.05
         self.show = False
         self.save_model = self.save_checkpoint
         self.eval = self.evaluate
+        self.ptr = False
     def initialize_params(self):
         pass
     def forward(self,input):
@@ -33,24 +34,35 @@ class BaseModel(object):
     def train(self):
         loss_plt = []
         epochs = self.train_epochs
-        pbar = tqdm.tqdm(range(epochs), ncols=150)       
+        pbar = tqdm.tqdm(range(epochs), ncols=150)
+        flag = False       
         for epoch,_ in enumerate(pbar):
             
             data,labels = self.dataloader.get_items(mode='train')
             start = time.perf_counter()
             predict = self.forward(data)
             self.output = predict
-            self.loss = self.compute_loss(predict,labels)
+            loss = self.compute_loss(predict,labels)
+            if self.loss == 0 and loss == 0 :
+                if len(np.argwhere(self.mask == True))  <=4 :
+                    self.evaluate(predict,labels)
+                    break
+            self.loss = loss
+            
             diff=None
             if predict is not None:
-                diff = predict - labels
+                diff = predict.reshape(-1,1) - labels.reshape(-1,1)
             self.backward(diff)
             end = time.perf_counter()
+            while self.ptr:
+                self.ptr = False
+                self.emerge()
+            
             self.update_params()
             pbar.set_description(f" Train Epoch {epoch+1}/{epochs}")
-            pbar.set_postfix( loss=self.loss, lr=str(round(self.lr,4)),cost_time = str(round((end-start)*1000,3)) +'ms')
+            pbar.set_postfix( loss=self.loss, lr=str(round(self.lr,4)),cost_time = str(round((end-start)*1000,3)) +'ms\n')
             loss_plt.append(copy.deepcopy(self.loss))
-            
+       
         if self.show:
             visualize_2D(np.linspace(1,epochs+1,epochs),np.array(loss_plt),'epochs','loss','loss graph')
         self.save_model()
@@ -75,4 +87,6 @@ class BaseModel(object):
         pass
 
     def save_checkpoint(self,**kwargs):
+        pass
+    def emerge(self,**kwargs):
         pass
