@@ -15,7 +15,7 @@ sys.path.insert(0,UTILS_DIR)
 from tools import visualize_decision_tree
 from base_model import BaseModel
 from loss import MSEloss,Errloss
-class C45DecisionTree(BaseModel):
+class Model(BaseModel):
     def __init__(self,dataloader=None,load_checkpoint=None):
         super().__init__(dataloader)
         

@@ -6,8 +6,8 @@ UTILS_DIR = os.path.join(BASE_DIR, 'utils')
 sys.path.insert(0,UTILS_DIR)
 from  data_preprocess import read_txt
 from  data_loader import DataLoader
-from  linear_discriminant_analysis import LinearDiscriminantAnalysis
-from  c45_decision_tree import C45DecisionTree
+from  lab2.linear_discriminant_analysis import LinearDiscriminantAnalysis
+from  lab3.c45_decision_tree import C45DecisionTree
 #python test.py --data data/lenses_data.txt --split 1 --ckpg checkpoints/20230321_19_52_09_tree_root.npz
 def parse_args():
     parser = argparse.ArgumentParser(description='Train')
