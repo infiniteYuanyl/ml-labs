@@ -2,19 +2,18 @@
 import numpy as np
 
 class DataLoader:
-    def __init__(self,data,shuffle=True,batch=0,k_fold=0,val=False,test=False,split_idx=[],data_type=np.int32):
+    def __init__(self,data,shuffle=True,batch=0,k_fold=0,val=False,test=False,split_idx=[]):
         
         self.mode2idx = {'train':0,'val':1,'test':2}
         self.batch_size = batch
         self.shuffle = shuffle
-        self.data_type = data_type
         self.has_val = val
         self.has_test = test
         if split_idx != []:
             self.normal_fixed_split(data,split_idx)
         elif k_fold !=0:
             self.k_fold_cross_validation_split(data,k_fold)
-    def get_items(self,mode='train',shuffle=False,batch_norm=False,feature_norm=False,type=np.int32):
+    def get_items(self,mode='train',shuffle=False,batch_norm=False,feature_norm=False):
         data = self.data[self.mode2idx[mode]]
         if data == []:
             raise ValueError('%s data doesn\'t exist!\n Please check your input!',mode)
@@ -27,8 +26,8 @@ class DataLoader:
             data = data.T
             data[:-1, :] = (data[:-1, :] - np.mean(data[:-1, :],axis=0)) / np.std(data[:-1, :],axis=0)  # 非标签列列均值方差归一化
             data = data.T
-        self.input_data = data[:,:-1].astype(self.data_type)
-        self.labels = data[:,-1].astype(np.int32)
+        self.input_data = data[:,:-1]
+        self.labels = data[:,-1]
         return self.input_data,self.labels
     def get_data(self,mode='train'):
         if  not hasattr(self,'input_data') :

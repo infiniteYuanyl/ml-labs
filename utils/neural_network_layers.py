@@ -79,7 +79,6 @@ class SoftmaxLossLayer(object):
     def get_loss(self, label):   # 计算损失
         self.batch_size = self.prob.shape[0]
         self.label_onehot = np.zeros_like(self.prob)
-        
         self.label_onehot[np.arange(self.batch_size), label] = 1.0
         loss = -np.sum(np.log(self.prob) * self.label_onehot) / self.batch_size
         return loss
