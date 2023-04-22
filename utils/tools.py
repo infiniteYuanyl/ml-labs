@@ -1,5 +1,6 @@
 from matplotlib import pyplot as plt
 import matplotlib.font_manager as fm
+import matplotlib
 import numpy as np
 
 def visualize_2D(x,y,x_title='',y_title='',title=None):
@@ -67,7 +68,63 @@ def visualize_decision_tree(inTree):
     plotTree.xOff = -0.5/plotTree.totalW; plotTree.yOff = 1.0;							
     plotTree(inTree, (0.5,1.0), '')															
     plt.show()
-        
+def visualize_naive_bayes(inputs, labels, predict):
+    num2char = {1:' S', 2: 'M', 3: 'L'}
+    labels = labels[:,np.newaxis]
+    predict = predict[:,np.newaxis]
+    data = np.hstack([inputs,labels,predict]).tolist()
+    for i in range(inputs.shape[0]):
+        data[i][1] = num2char[data[i][1]]
+
+    # matplotlib.rcParams["font.sans-serif"] = ["SimHei"]  # 展示中文字体
+    matplotlib.rcParams["axes.unicode_minus"] = False  # 处理负刻度值
+    kinds = ["A1", "A2", "label", "predict"]
+    colors = ["#e41a1c", "#377eb8", "#00ccff", "#984ea3"]
+    
+
+    # 饼图下添加表格
+    cellTexts = data
+    rowLabels = [i for i in range(1,inputs.shape[0]+1)]
+    plt.table(cellText=cellTexts,  # 简单理解为表示表格里的数据
+              colWidths=[0.1]*4,  # 每个小格子的宽度 * 个数，要对应相应个数
+              colLabels=kinds,  # 每列的名称
+              colColours=colors,  # 每列名称颜色
+              rowLabels=rowLabels,  # 每行的名称（从列名称的下一行开始）
+              rowLoc="center",  # 行名称的对齐方式
+              loc="center"  # 表格所在位置
+              )
+    plt.title("简单图形")
+    # plt.figure(dpi=80)
+    # plt.show()
+def visualize_adaboost(inputs, labels, predict):
+    
+    labels = labels[:,np.newaxis]
+    predict = predict[:,np.newaxis]
+    
+    data = np.hstack([inputs,labels,predict])
+    data = np.around(data,decimals=1)
+    
+    print(data)
+    # matplotlib.rcParams["font.sans-serif"] = ["SimHei"]  # 展示中文字体
+    matplotlib.rcParams["axes.unicode_minus"] = False  # 处理负刻度值
+    kinds = ["feat1", "feat2", "label", "predict"]
+    colors = ["#e41a1c", "#377eb8", "#00ccff", "#984ea3"]
+    
+
+    # 饼图下添加表格
+    cellTexts = data
+    rowLabels = [i for i in range(1,inputs.shape[0]+1)]
+    plt.table(cellText=cellTexts,  # 简单理解为表示表格里的数据
+              colWidths=[0.1]*4,  # 每个小格子的宽度 * 个数，要对应相应个数
+              colLabels=kinds,  # 每列的名称
+              colColours=colors,  # 每列名称颜色
+              rowLabels=rowLabels,  # 每行的名称（从列名称的下一行开始）
+              rowLoc="center",  # 行名称的对齐方式
+              loc="center"  # 表格所在位置
+              )
+    plt.title("简单图形")
+    plt.figure(dpi=80)
+    plt.show()
 def getNumLeafs(myTree):
     numLeafs = 0
     firstStr = list(myTree.keys())[0]
