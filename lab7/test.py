@@ -1,7 +1,7 @@
 import argparse
 import sys
 
-
+import numpy as np
 import os
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 UTILS_DIR = os.path.join(BASE_DIR, 'utils')
@@ -32,7 +32,7 @@ if __name__ == '__main__':
     data = read_txt(args)
     data = data[:,:3]
     data[:,-1] = (data[:,-1]+ 1)/2
-    dataloader = DataLoader(data,split_idx=[args.split,args.split])
+    dataloader = DataLoader(data,split_idx=[args.split,args.split],data_type=np.float32)
     net = AdaBoost(dataloader = dataloader,load_checkpoint=args.ckpg,output_num=2,is_test=True)
     net.test()  
 

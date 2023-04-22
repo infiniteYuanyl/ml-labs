@@ -14,7 +14,7 @@ import math
 from copy import deepcopy
 from collections import OrderedDict
 from neural_network_layers import SoftmaxLossLayer
-from tools import visualize_naive_bayes
+from tools import visualize_adaboost
 # sys.path.append('../')
 # print(sys.path)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -74,7 +74,7 @@ class LinearRegression:
 
 class AdaBoost(BaseModel):
     def __init__(self, dataloader=None, load_checkpoint=None, epochs=1, features_num=2,\
-                  output_num=1,classifier=LinearRegression,is_test=False):
+                  output_num=1,classifiers_num=10,classifiers_train_epochs=1000,classifier=LinearRegression,is_test=False):
         super().__init__(dataloader, epochs)
 
         self.save_model = self.save_checkpoint
@@ -82,6 +82,8 @@ class AdaBoost(BaseModel):
         self.features_num = features_num
         self.output_num = output_num
         self.classifier = classifier
+        self.classifiers_num = classifiers_num
+        self.classifiers_epochs = classifiers_train_epochs
         self.classifiers_params = []
         self.alphas = []
         self.is_test = is_test
@@ -121,9 +123,7 @@ class AdaBoost(BaseModel):
         sum_prob = np.zeros((self.input.shape[0],self.output_num))
 
         for i,classifer_params in enumerate(self.classifiers_params):
-            # print('alpha',alpha.shape)
             self.classifier.load_weights(classifer_params)
-            
             prob = self.classifier.forward()
             sum_prob += self.alphas[i] * prob
         pred = np.argmax(sum_prob,axis=1)
@@ -133,17 +133,14 @@ class AdaBoost(BaseModel):
 
     def backward(self, diff):
         
-        iters = self.train_epochs
-        iters = 10
+        iters = self.classifiers_num
         self.classifiers_params = []
         for iter in range(iters):
             
-            self.classifier.train(2000)
+            self.classifier.train(self.classifiers_epochs)
             if iter == 0:
                 weights = np.ones(self.labels.shape[0])/self.labels.shape[0]
             mask = self.classifier.pred == self.labels
-            # print('labels',self.labels)
-            # print('pred',self.classifier.pred)
             err = 1 - np.sum(mask) / self.labels.shape[0]
             
             err = float(err)
@@ -185,15 +182,22 @@ class AdaBoost(BaseModel):
         test_data, test_labels = self.dataloader.get_data(mode='test')
         
         predict = self.forward(input)
+        print('predict:',end='')
         print(predict)
+        print('labels: ',end='')
         print(test_labels)
         acc = np.sum(predict == test_labels) / test_data.shape[0]
         print("test accuracy is ",acc)
-        # visualize_naive_bayes(input,labels,predict)
+        visualize_adaboost(test_data,test_labels,predict)
 
     def save_checkpoint(self, **kwargs):
         d = datetime.today().strftime('%Y%m%d_%H_%M_%S')
         d.split(' ')
+        print("alphas")
+        print(self.alphas)
+        print("classifiers params:")
+        for i in range(len(self.classifiers_params)):
+            print(self.classifiers_params[i])
         np.savez('checkpoints/'+d+'_adaboost.npz', classifiers=self.classifiers_params,alpha=self.alphas,allow_pickle=True)
         print('checkpoint has been saved in %s!' %
               ('checkpoints/'+d+'_adaboost.npz'))
