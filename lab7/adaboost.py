@@ -134,7 +134,6 @@ class AdaBoost(BaseModel):
         
         iters = self.classifiers_num
         self.classifiers_params = []
-        iters = 1
         for iter in range(iters):
             
             self.classifier.train(self.classifiers_epochs)
