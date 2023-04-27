@@ -10,7 +10,7 @@ sys.path.insert(0,UTILS_DIR)
 from adaboost import AdaBoost
 from  data_preprocess import read_txt
 from  data_loader import DataLoader
-#python test.py --data data/test.txt --split 1 --ckpg checkpoints/20230404_15_15_48_svm.npz
+#python test.py --data data/test.txt --split 0 --ckpg checkpoints/20230427_12_24_20_adaboost.npz
 
 
 def parse_args():

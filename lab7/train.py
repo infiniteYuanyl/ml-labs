@@ -11,7 +11,7 @@ sys.path.insert(0,UTILS_DIR)
 from adaboost import AdaBoost
 from  data_preprocess import read_txt
 from  data_loader import DataLoader
-#python train.py --data data/train.txt --split 91 --epochs 2
+#python train.py --data data/train.txt --split 91 --epochs 1
 
 
 def parse_args():

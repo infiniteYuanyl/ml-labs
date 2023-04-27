@@ -154,7 +154,7 @@ class AdaBoost(BaseModel):
                 break
             if err == 0:
                 print('train ok')
-                self.alphas.append(10)
+                self.alphas.append(5)
                 self.classifiers_params.append(self.classifier.params)
                 break
             alpha = 0.5 * math.log((1-err)/err)
