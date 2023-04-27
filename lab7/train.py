@@ -34,7 +34,6 @@ if __name__ == '__main__':
     data = read_txt(args)
     data = data[:,:3]
     data[:,-1] = (data[:,-1]+ 1)/2
-    print(data)
     dataloader = DataLoader(data,split_idx=[args.split,args.split],data_type=np.float32)
     net = AdaBoost(dataloader = dataloader,features_num=2,output_num = 2,epochs=args.epochs)
     net.train()  

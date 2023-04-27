@@ -44,7 +44,6 @@ class LinearRegression:
     def load_weights(self,weights):
         self.params = weights
 
-    
     def update_params(self,dloss):
         
         self.params = self.params - self.lr * np.dot(self.inputs.T,dloss)
@@ -74,7 +73,7 @@ class LinearRegression:
 
 class AdaBoost(BaseModel):
     def __init__(self, dataloader=None, load_checkpoint=None, epochs=1, features_num=2,\
-                  output_num=1,classifiers_num=10,classifiers_train_epochs=1000,classifier=LinearRegression,is_test=False):
+                  output_num=1,classifiers_num=10,classifiers_train_epochs=100,classifier=LinearRegression,is_test=False):
         super().__init__(dataloader, epochs)
 
         self.save_model = self.save_checkpoint
@@ -135,28 +134,35 @@ class AdaBoost(BaseModel):
         
         iters = self.classifiers_num
         self.classifiers_params = []
+        iters = 1
         for iter in range(iters):
             
             self.classifier.train(self.classifiers_epochs)
             if iter == 0:
                 weights = np.ones(self.labels.shape[0])/self.labels.shape[0]
-            mask = self.classifier.pred == self.labels
-            err = 1 - np.sum(mask) / self.labels.shape[0]
+            mask = self.classifier.pred != self.labels
+            mask_weights = weights
+            mask_weights[np.argwhere(mask==False)] = 0
+            
+            
+            
+            err = np.sum(mask_weights)
             
             err = float(err)
-            print('err',err)
+            print('\nerr',err)
             if err >= 0.5:
                 print('err go out!')
                 break
             if err == 0:
                 print('train ok')
-                self.alphas.append(100)
+                self.alphas.append(10)
                 self.classifiers_params.append(self.classifier.params)
                 break
             alpha = 0.5 * math.log((1-err)/err)
-            norm_factor = np.sum(weights * np.exp(-alpha * (2 * mask -1)))
             
-            weights = weights/norm_factor * np.exp(-alpha * (2 * mask -1))
+            norm_factor = np.sum(weights * np.exp(-alpha * (2 * ~mask -1)))
+            
+            weights = weights/norm_factor * np.exp(-alpha * (2 * ~mask -1))
             self.classifier.loss_weights = weights
             self.alphas.append(alpha)
             self.classifiers_params.append(self.classifier.params)
