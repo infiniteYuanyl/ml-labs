@@ -70,7 +70,6 @@ class NaiveBayes(BaseModel):
             for category in self.categories:
                 category_prob = 0.0
                 for feature_id in range(input.shape[1]):
-                    
                     feature_dict = self.cond_prob_dict[feature_id]
                     prob = feature_dict[(x[feature_id],category)]
                     if prob == 0:
@@ -92,7 +91,7 @@ class NaiveBayes(BaseModel):
         
         categories = list(np.unique(self.labels))
         input_featues_num = self.input.shape[1]
-        
+        print('categories',categories)
         self.cond_prob_dict = {}
         for feature_id in range(input_featues_num):
             feature_values = np.unique(self.input[:,feature_id])
@@ -100,12 +99,17 @@ class NaiveBayes(BaseModel):
             for category in categories:
                 for feature_value in feature_values:
                     category_mask = self.labels == category
+                    print('category mask',category_mask)
                     feature_mask = self.input[:,feature_id] == feature_value
+                    print('feature mask',feature_mask)
                     # 统计在该类别下，各个特征值出现的概率
                     both_mask = category_mask & feature_mask
+                    print('all mask',both_mask)
                     prob = np.sum(both_mask) / np.sum(category_mask)
                     prob_list.append(((feature_value,category),prob))
             self.cond_prob_dict[feature_id] = OrderedDict(prob_list)
+
+            break
         
         self.categories = categories
         
@@ -120,6 +124,10 @@ class NaiveBayes(BaseModel):
         test_data, test_labels = self.dataloader.get_data(mode='test')
         print("okk!")
         predict = self.forward(test_data)
+        print('labels',test_labels)
+        predict = predict.astype(np.int32)
+        print('predict',predict)
+        print('err',np.sum(predict!=labels))
         visualize_naive_bayes(test_data,test_labels,predict)
 
     def save_checkpoint(self, **kwargs):
