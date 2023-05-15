@@ -125,6 +125,55 @@ def visualize_adaboost(inputs, labels, predict):
     plt.title("简单图形")
     plt.figure(dpi=80)
     plt.show()
+def visualize_kmeans(input,mean_vector,pred):
+    
+    colors = ['r', 'b', 'm', 'y', 'c', 'g']
+    cate  = mean_vector.shape[0]
+    for i in range(cate):
+        plt.scatter(mean_vector[i][0], mean_vector[i][1], marker='*', s=150,c=colors[i+3])
+
+    
+    
+    for c in range(cate):
+        item_idx = np.argwhere(pred == c)
+        #print(item_idx)
+        plt.scatter(input[item_idx,0], input[item_idx,1], c=colors[c])
+
+    plt.show()
+def visualize_pca(data,w,vecs):
+    """
+     visualize raw data
+    """
+    colors = ['r', 'b', 'm', 'y', 'c', 'g']
+    size = 2
+
+    plt.figure(1,(8,8))
+
+    plt.scatter(data[:,0],data[:,1],label='origin data',c=colors[0])
+    data_ = data @ w @ w.T + data.mean(0)
+    plt.scatter(data_[:,0],data_[:,1],label='restructured data',c=colors[1])
+
+    i=0
+    ev = np.array([vecs[:,i]*-1,vecs[:,i]])*size
+    ev = (ev+data.mean(0))
+    plt.plot(ev[:,0],ev[:,1],label = 'eigen vector '+str(i+1),c=colors[0])
+
+    i=1
+    ev = np.array([vecs[:,i]*-1,vecs[:,i]])*size
+    ev = (ev+data.mean(0))
+    plt.plot(ev[:,0],ev[:,1],label = 'eigen vector '+str(i+1),c=colors[1])
+
+    #plt.plot(vecs[:,1]*-10,vecs[:,1]*10)
+
+    #画一下x轴y轴
+    plt.plot([-size,size],[0,0],c='black')
+    plt.plot([0,0],[-size,size],c='black')
+    plt.xlim(-size,size)
+    plt.ylim(-size,size)
+    plt.legend()
+    plt.show()
+
+
 def getNumLeafs(myTree):
     numLeafs = 0
     firstStr = list(myTree.keys())[0]

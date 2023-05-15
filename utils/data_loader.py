@@ -18,8 +18,8 @@ class DataLoader:
         data = self.data[self.mode2idx[mode]]
         if data == []:
             raise ValueError('%s data doesn\'t exist!\n Please check your input!',mode)
-        if shuffle:
-            np.random.shuffle(data) 
+        # if shuffle:
+        #     np.random.shuffle(data)
         
         if batch_norm:
             data[:, :-1] = (data[:, :-1] - np.mean(data[:, :-1],axis=0)) / np.std(data[:, :-1],axis=0)  # 非标签列列均值方差归一化
@@ -30,9 +30,9 @@ class DataLoader:
         self.input_data = data[:,:-1].astype(self.data_type)
         self.labels = data[:,-1].astype(np.int32)
         return self.input_data,self.labels
-    def get_data(self,mode='train'):
+    def get_data(self,mode='train',shuffle=False):
         if  not hasattr(self,'input_data') :
-            return self.get_items(mode=mode,shuffle=False)
+            return self.get_items(mode=mode,shuffle=shuffle)
         return self.input_data,self.labels
 
 
