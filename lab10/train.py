@@ -1,6 +1,5 @@
 import argparse
 import sys
-# sys.path.append('F:\\A机器学习\\labs\\utils')
 import numpy as np
 import os
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -23,9 +22,6 @@ def parse_args():
     parser.add_argument('--epochs',default=1, help='max epochs to train',type=int)
     parser.add_argument('--ckpg', help='max epochs to train')
     parser.add_argument('--show', help='show results')
-    
-
-
 
     args = parser.parse_args()
     return args
@@ -36,7 +32,7 @@ if __name__ == '__main__':
     data = read_txt(args)
     data = data[:,1:]
     data,sort_idx = feature_select(data)#按照评价指标给特征排序
-    
+    print('selected features idx:',sort_idx)
     err = 1
     feature_select_num = 0
     for i in range(data.shape[1]-1):
@@ -54,12 +50,8 @@ if __name__ == '__main__':
         ckpg = net.save_model()
         err = net.err
         print('err',err)
-    print('old',old_data.shape)
+    
     net = NaiveBayes(dataloader = dataloader,features_num=feature_select_num,epochs=args.epochs,load_checkpoint=ckpg)
     pred = net.forward(old_data[:,:-1])
     visualize_feature_select(old_data[:,:-1], old_data[:,-1], pred)
-    print('idx',sort_idx)
-
-
-
     
