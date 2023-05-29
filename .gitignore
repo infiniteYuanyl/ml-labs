@@ -2,5 +2,6 @@
 checkpoints/
 __pycache__/
 *.zip
+*.pdf
 lab*.md
 .DS*
