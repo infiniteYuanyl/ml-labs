@@ -34,6 +34,7 @@ if __name__ == '__main__':
     
     dataloader = DataLoader(data,split_idx=[args.split,args.split])
     net = NaiveBayes(dataloader = dataloader,features_num=2,epochs=args.epochs)
-    net.train()  
+    net.train()
+    
 
     

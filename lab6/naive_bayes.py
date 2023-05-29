@@ -63,6 +63,8 @@ class NaiveBayes(BaseModel):
         if self.cond_prob_dict =={}:
             return None
         predict = np.zeros(input.shape[0])
+        
+        #print('dict',self.cond_prob_dict)
         for i in range(input.shape[0]):
             input_predict = -2
             max_category_prob = -float('inf')
@@ -91,25 +93,25 @@ class NaiveBayes(BaseModel):
         
         categories = list(np.unique(self.labels))
         input_featues_num = self.input.shape[1]
-        print('categories',categories)
+        #print('categories',categories)
         self.cond_prob_dict = {}
+        
         for feature_id in range(input_featues_num):
             feature_values = np.unique(self.input[:,feature_id])
             prob_list = []
             for category in categories:
                 for feature_value in feature_values:
                     category_mask = self.labels == category
-                    print('category mask',category_mask)
+                    #print('category mask',category_mask)
                     feature_mask = self.input[:,feature_id] == feature_value
-                    print('feature mask',feature_mask)
+                    #print('feature mask',feature_mask)
                     # 统计在该类别下，各个特征值出现的概率
                     both_mask = category_mask & feature_mask
-                    print('all mask',both_mask)
+                    #print('all mask',both_mask)
                     prob = np.sum(both_mask) / np.sum(category_mask)
                     prob_list.append(((feature_value,category),prob))
             self.cond_prob_dict[feature_id] = OrderedDict(prob_list)
 
-            break
         
         self.categories = categories
         
@@ -119,17 +121,19 @@ class NaiveBayes(BaseModel):
         pred = self.forward(input)
         
 
-    def evaluate(self, input, labels):
+    def evaluate(self,**kwargs):
         #只对同样的样本进行评估
         test_data, test_labels = self.dataloader.get_data(mode='test')
-        print("okk!")
+        
         predict = self.forward(test_data)
-        print('labels',test_labels)
+        
         predict = predict.astype(np.int32)
-        print('predict',predict)
-        print('err',np.sum(predict!=labels))
-        visualize_naive_bayes(test_data,test_labels,predict)
-
+        self.err = np.sum(predict!=test_labels) / test_data.shape[0]
+        # print('predict',predict)
+        # print('err',np.sum(predict!=labels))
+        #visualize_naive_bayes(test_data,test_labels,predict)
+    
+        
     def save_checkpoint(self, **kwargs):
         d = datetime.today().strftime('%Y%m%d_%H_%M_%S')
         d.split(' ')
@@ -138,5 +142,6 @@ class NaiveBayes(BaseModel):
                   ,allow_pickle=True)
         print('checkpoint has been saved in %s!' %
               ('checkpoints/'+d+'_nv_bayes.npz'))
+        return 'checkpoints/'+d+'_nv_bayes.npz'
 
     
