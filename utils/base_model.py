@@ -65,7 +65,7 @@ class BaseModel(object):
        
         if self.show:
             visualize_2D(np.linspace(1,epochs+1,epochs),np.array(loss_plt),'epochs','loss','loss graph')
-        self.save_model()
+        
         print('Train over')
     def val(self):
         pass

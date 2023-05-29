@@ -94,8 +94,8 @@ def visualize_naive_bayes(inputs, labels, predict):
               loc="center"  # 表格所在位置
               )
     plt.title("简单图形")
-    # plt.figure(dpi=80)
-    # plt.show()
+    plt.figure(dpi=80)
+    plt.show()
 def visualize_adaboost(inputs, labels, predict):
     
     labels = labels[:,np.newaxis]
@@ -172,7 +172,42 @@ def visualize_pca(data,w,vecs):
     plt.ylim(-size,size)
     plt.legend()
     plt.show()
+def visualize_feature_select(inputs, labels, predict):
+    num2char_f1 = {1:"reduced", 2: "normal"}
+    num2char_f2 = {1:"no", 2: "yes"}
+    num2char_l1 = {1:"hard", 2: "soft",3:"no"}
+    labels = labels[:,np.newaxis]
+    predict = predict[:,np.newaxis]
+    
+    data = np.hstack([inputs,labels,predict]).tolist()
+    for i in range(inputs.shape[0]):
+        data[i][0] = num2char_f1[data[i][0]]
+        data[i][1] = num2char_f2[data[i][1]]
+        data[i][2] = num2char_l1[data[i][2]]
+        data[i][3] = num2char_l1[data[i][3]]
 
+
+    # matplotlib.rcParams["font.sans-serif"] = ["SimHei"]  # 展示中文字体
+    matplotlib.rcParams["axes.unicode_minus"] = False  # 处理负刻度值
+    kinds = ["tear rate", "astigmatic", "label", "predict"]
+    colors = ["#e41a1c", "#377eb8", "#00ccff", "#984ea3"]
+    
+
+    # 饼图下添加表格
+    cellTexts = data
+    fig = plt.figure(figsize=(8, 6))
+    rowLabels = [i for i in range(1,inputs.shape[0]+1)]
+    plt.table(cellText=cellTexts,  # 简单理解为表示表格里的数据
+              colWidths=[0.1]*4,  # 每个小格子的宽度 * 个数，要对应相应个数
+              colLabels=kinds,  # 每列的名称
+              colColours=colors,  # 每列名称颜色
+              rowLabels=rowLabels,  # 每行的名称（从列名称的下一行开始）
+              rowLoc="center",  # 行名称的对齐方式
+              loc="center"  # 表格所在位置
+              )
+    plt.title("Feature Select")
+    plt.figure(dpi=130)
+    plt.show()
 
 def getNumLeafs(myTree):
     numLeafs = 0
