@@ -1,4 +1,4 @@
-# machine learning labs
+# Machine Learning Labs
 OUC机器学习实验
 ## lab1 线性回归模型
 ## lab2 线性判别分析
