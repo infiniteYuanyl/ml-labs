@@ -1,0 +1,29 @@
+[WARNING] ME(27928:8119754240,MainProcess):2023-06-12-17:32:01.618.567 [mindspore/dataset/core/validator_helpers.py:806] 'Resize' from mindspore.dataset.vision.c_transforms is deprecated from version 1.8 and will be removed in a future version. Use 'Resize' from mindspore.dataset.vision instead.
+[WARNING] ME(27928:8119754240,MainProcess):2023-06-12-17:32:01.618.740 [mindspore/dataset/core/validator_helpers.py:806] 'Rescale' from mindspore.dataset.vision.c_transforms is deprecated from version 1.8 and will be removed in a future version. Use 'Rescale' from mindspore.dataset.vision instead.
+[WARNING] ME(27928:8119754240,MainProcess):2023-06-12-17:32:01.618.788 [mindspore/dataset/core/validator_helpers.py:806] 'Rescale' from mindspore.dataset.vision.c_transforms is deprecated from version 1.8 and will be removed in a future version. Use 'Rescale' from mindspore.dataset.vision instead.
+[WARNING] ME(27928:8119754240,MainProcess):2023-06-12-17:32:01.618.826 [mindspore/dataset/core/validator_helpers.py:806] 'HWC2CHW' from mindspore.dataset.vision.c_transforms is deprecated from version 1.8 and will be removed in a future version. Use 'HWC2CHW' from mindspore.dataset.vision instead.
+[WARNING] ME(27928:8119754240,MainProcess):2023-06-12-17:32:01.618.848 [mindspore/dataset/core/validator_helpers.py:806] 'TypeCast' from mindspore.dataset.transforms.c_transforms is deprecated from version 1.8 and will be removed in a future version. Use 'TypeCast' from mindspore.dataset.transforms instead.
+epoch: 2 step: 8, loss is 2.302523612976074
+epoch: 3 step: 16, loss is 2.302049160003662
+epoch: 4 step: 24, loss is 2.2966158390045166
+epoch: 5 step: 32, loss is 0.8275641798973083
+epoch: 6 step: 40, loss is 0.7376498579978943
+epoch: 7 step: 48, loss is 0.5563288331031799
+epoch: 8 step: 56, loss is 0.5219946503639221
+epoch: 9 step: 64, loss is 0.40913137793540955
+epoch: 10 step: 72, loss is 0.38215622305870056
+epoch: 11 step: 80, loss is 0.39073339104652405
+epoch: 12 step: 88, loss is 0.37029358744621277
+epoch: 13 step: 96, loss is 0.36923158168792725
+epoch: 14 step: 104, loss is 0.37175828218460083
+epoch: 15 step: 112, loss is 0.30021360516548157
+epoch: 17 step: 3, loss is 0.3498605489730835
+epoch: 18 step: 11, loss is 0.28876960277557373
+epoch: 19 step: 19, loss is 0.3518097996711731
+epoch: 20 step: 27, loss is 0.30846554040908813
+[WARNING] ME(27928:8119754240,MainProcess):2023-06-12-19:14:29.519.142 [mindspore/dataset/core/validator_helpers.py:806] 'Resize' from mindspore.dataset.vision.c_transforms is deprecated from version 1.8 and will be removed in a future version. Use 'Resize' from mindspore.dataset.vision instead.
+[WARNING] ME(27928:8119754240,MainProcess):2023-06-12-19:14:29.521.194 [mindspore/dataset/core/validator_helpers.py:806] 'Rescale' from mindspore.dataset.vision.c_transforms is deprecated from version 1.8 and will be removed in a future version. Use 'Rescale' from mindspore.dataset.vision instead.
+[WARNING] ME(27928:8119754240,MainProcess):2023-06-12-19:14:29.521.260 [mindspore/dataset/core/validator_helpers.py:806] 'Rescale' from mindspore.dataset.vision.c_transforms is deprecated from version 1.8 and will be removed in a future version. Use 'Rescale' from mindspore.dataset.vision instead.
+[WARNING] ME(27928:8119754240,MainProcess):2023-06-12-19:14:29.521.306 [mindspore/dataset/core/validator_helpers.py:806] 'HWC2CHW' from mindspore.dataset.vision.c_transforms is deprecated from version 1.8 and will be removed in a future version. Use 'HWC2CHW' from mindspore.dataset.vision instead.
+[WARNING] ME(27928:8119754240,MainProcess):2023-06-12-19:14:29.521.376 [mindspore/dataset/core/validator_helpers.py:806] 'TypeCast' from mindspore.dataset.transforms.c_transforms is deprecated from version 1.8 and will be removed in a future version. Use 'TypeCast' from mindspore.dataset.transforms instead.
+acc: {'Accuracy': 0.8803084935897436}

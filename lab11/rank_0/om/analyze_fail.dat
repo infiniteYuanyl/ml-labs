@@ -1,0 +1,130 @@
+# 1.This file shows the parsed IR info when graph evaluating failed to help find the problem.
+# 2.You can search the last `------------------------>` to the node which is inferred failed.
+# 3.Refer to https://www.mindspore.cn/search?inputValue=analyze_fail.dat to get more instructions.
+# ===============================================================================
+
+# [No.1] Default_wrapper.23
+# In file /Users/yuan/anaconda3/envs/py39/lib/python3.9/site-packages/mindspore/nn/wrap/cell_wrapper.py:687/    def construct(self, data, label):/
+funcgraph fg_23(
+        %para1 : Tensor(F32)[32, 1, 32, 32]    # data
+        , %para2 : Tensor(I32)[32]    # label
+        , %para3 : Ref[Tensor(F32)][512]    # 0.bias
+        , %para4 : Ref[Tensor(F32)][512, 2048]    # 0.weight
+        , %para5 : Ref[Tensor(F32)][128]    # 2.bias
+        , %para6 : Ref[Tensor(F32)][128, 512]    # 2.weight
+        , %para7 : Ref[Tensor(F32)][10]    # 4.bias
+        , %para8 : Ref[Tensor(F32)][10, 128]    # 4.weight
+    ) {
+
+#------------------------> 0
+    %1 = FuncGraph::fg_24(%para1, %para2)    #(Tensor(F32)[32, 1, 32, 32], Tensor(I32)[32])    # fg_24=Default.24 #scope: Default
+#[CNode]29
+    Primitive::Return{prim_type=1}(%1)    #(Undefined) #scope: Default
+      # In file /Users/yuan/anaconda3/envs/py39/lib/python3.9/site-packages/mindspore/nn/wrap/cell_wrapper.py:689/        if self.add_cast_fp32:/#[CNode]30
+}
+# order:
+#   1: @Default_wrapper.23:[CNode]29{[0]: ValueNode<FuncGraph> Default.24, [1]: data, [2]: label}
+#   2: @Default_wrapper.23:[CNode]30{[0]: ValueNode<Primitive> Return, [1]: [CNode]29}
+
+
+# [No.2] Default.24
+# In file /Users/yuan/anaconda3/envs/py39/lib/python3.9/site-packages/mindspore/nn/wrap/cell_wrapper.py:687/    def construct(self, data, label):/
+funcgraph fg_24[fg_23](
+        %para9 : Tensor(F32)[32, 1, 32, 32]    # data
+        , %para10 : Tensor(I32)[32]    # label
+    ) {
+    %1 : BoolNoShape = FuncGraph::fg_31(Bool(0))    #(BoolNoShape)    # fg_31=bool_.31 #scope: Default
+      # In file /Users/yuan/anaconda3/envs/py39/lib/python3.9/site-packages/mindspore/nn/wrap/cell_wrapper.py:689/        if self.add_cast_fp32:/#[CNode]32
+    %2 : FuncNoShape = Primitive::Switch{prim_type=1}(%1, FuncGraph::fg_33, FuncGraph::fg_25)    #(BoolNoShape, FuncNoShape, FuncNoShape)    # fg_33=✓Default.33, fg_25=✗Default.25 #scope: Default
+      # In file /Users/yuan/anaconda3/envs/py39/lib/python3.9/site-packages/mindspore/nn/wrap/cell_wrapper.py:689/        if self.add_cast_fp32:/#[CNode]34
+
+#------------------------> 1
+    %3 = %2() #scope: Default
+      # In file /Users/yuan/anaconda3/envs/py39/lib/python3.9/site-packages/mindspore/nn/wrap/cell_wrapper.py:689/        if self.add_cast_fp32:/#[CNode]35
+    %4 = Primitive::TupleGetItem{prim_type=1}(%3, I64(0))    #(Undefined, Undefined) #scope: Default
+#[CNode]36
+    %5 = Primitive::TupleGetItem{prim_type=1}(%3, I64(1))    #(Undefined, Undefined) #scope: Default
+#[CNode]37
+    %6 = FuncGraph::fg_38(%4, %5)    #(Undefined, Undefined)    # fg_38=↓Default.38 #scope: Default
+#[CNode]39
+    Primitive::Return{prim_type=1}(%6)    #(Undefined) #scope: Default
+      # In file /Users/yuan/anaconda3/envs/py39/lib/python3.9/site-packages/mindspore/nn/wrap/cell_wrapper.py:689/        if self.add_cast_fp32:/#[CNode]40
+}
+# order:
+#   1: @Default.24:outputs{[0]: ValueNode<FuncGraph> LeNet5.26, [1]: data}
+#   2: @Default.24:[CNode]32{[0]: ValueNode<FuncGraph> bool_.31, [1]: ValueNode<BoolImm> false}
+#   3: @Default.24:[CNode]34{[0]: ValueNode<Primitive> Switch, [1]: [CNode]32, [2]: ValueNode<FuncGraph> ✓Default.33, [3]: ValueNode<FuncGraph> ✗Default.25}
+#   4: @Default.24:[CNode]35{[0]: [CNode]34}
+#   5: @Default.24:[CNode]39{[0]: ValueNode<FuncGraph> ↓Default.38, [1]: [CNode]36, [2]: [CNode]37}
+#   6: @Default.24:[CNode]40{[0]: ValueNode<Primitive> Return, [1]: [CNode]39}
+#   7: @Default.24:[CNode]36{[0]: ValueNode<Primitive> TupleGetItem, [1]: [CNode]35, [2]: ValueNode<Int64Imm> 0}
+#   8: @Default.24:[CNode]37{[0]: ValueNode<Primitive> TupleGetItem, [1]: [CNode]35, [2]: ValueNode<Int64Imm> 1}
+
+
+# [No.3] ✗Default.25
+# In file /Users/yuan/anaconda3/envs/py39/lib/python3.9/site-packages/mindspore/nn/wrap/cell_wrapper.py:689/        if self.add_cast_fp32:/
+funcgraph fg_25[fg_24](
+) {
+
+#------------------------> 2
+    %1 = $(Default.24):FuncGraph::fg_26(%para9)    #(Tensor(F32)[32, 1, 32, 32])    # fg_26=LeNet5.26 #scope: Default
+      # In file /Users/yuan/anaconda3/envs/py39/lib/python3.9/site-packages/mindspore/nn/wrap/cell_wrapper.py:688/        outputs = self._network(data)/#outputs
+    %2 = Primitive::MakeTuple{prim_type=1}(%1, %para10)    #(Undefined, Tensor(I32)[32]) #scope: Default
+      # In file /Users/yuan/anaconda3/envs/py39/lib/python3.9/site-packages/mindspore/nn/wrap/cell_wrapper.py:689/        if self.add_cast_fp32:/#[CNode]41
+    Primitive::Return{prim_type=1}(%2)    #(Undefined) #scope: Default
+      # In file /Users/yuan/anaconda3/envs/py39/lib/python3.9/site-packages/mindspore/nn/wrap/cell_wrapper.py:689/        if self.add_cast_fp32:/#[CNode]42
+}
+# order:
+#   1: @✗Default.25:[CNode]41{[0]: ValueNode<Primitive> MakeTuple, [1]: outputs, [2]: label}
+#   2: @✗Default.25:[CNode]42{[0]: ValueNode<Primitive> Return, [1]: [CNode]41}
+
+
+# [No.4] LeNet5.26
+# In file /Users/yuan/Code/MachineLearning/lab11/train.py:75/    def construct(self, x):/
+funcgraph fg_26[fg_23](
+        %para11 : Tensor(F32)[32, 1, 32, 32]    # x
+    ) {
+
+#------------------------> 3
+    %1 = FuncGraph::fg_27(I64(0), %para11)    #(I64NoShape, Tensor(F32)[32, 1, 32, 32])    # fg_27=↵LeNet5.27 #scope: Default/network-WithLossCell/_backbone-LeNet5
+      # In file /Users/yuan/Code/MachineLearning/lab11/train.py:77/        for layer in self.crp_layers:/#[CNode]43
+    Primitive::Return{prim_type=1}(%1)    #(Undefined) #scope: Default/network-WithLossCell/_backbone-LeNet5
+      # In file /Users/yuan/Code/MachineLearning/lab11/train.py:77/        for layer in self.crp_layers:/#[CNode]44
+}
+# order:
+#   1: @LeNet5.26:[CNode]45{[0]: ValueNode<Primitive> resolve, [1]: ValueNode<NameSpace> ClassMember: 'Namespace:__main__..<LeNet5::4385336512>', [2]: ValueNode<Symbol> crp_layers}
+#   2: @LeNet5.26:[CNode]46{[0]: ValueNode<FuncGraph> ms_len.47, [1]: [CNode]45}
+#   3: @LeNet5.26:[CNode]43{[0]: ValueNode<FuncGraph> ↵LeNet5.27, [1]: ValueNode<Int64Imm> 0, [2]: x}
+#   4: @LeNet5.26:[CNode]44{[0]: ValueNode<Primitive> Return, [1]: [CNode]43}
+
+
+# [No.5] ↵LeNet5.27
+# In file /Users/yuan/Code/MachineLearning/lab11/train.py:77/        for layer in self.crp_layers:/
+funcgraph fg_27[fg_26](
+        %para12    # @[CNode]28
+        , %para13    # фx
+    ) {
+
+#------------------------> 4
+    %1 = $(LeNet5.26):Primitive::resolve{prim_type=1}(NameSpace::ClassMember, crp_layers)    #(ExternalTypeNoShape, ExternalTypeNoShape) #scope: Default/network-WithLossCell/_backbone-LeNet5
+      # In file /Users/yuan/Code/MachineLearning/lab11/train.py:77/        for layer in self.crp_layers:/#[CNode]45
+    %2 = $(LeNet5.26):FuncGraph::fg_47(%1)    #(Undefined)    # fg_47=ms_len.47 #scope: Default/network-WithLossCell/_backbone-LeNet5
+      # In file /Users/yuan/Code/MachineLearning/lab11/train.py:77/        for layer in self.crp_layers:/#[CNode]46
+    %3 = MultitypeFuncGraph::less{(Number, Number), (String, String), (Number, Tensor), (Tensor, Tensor), (Tensor, Number)}(%para12, %2)    #(Undefined, Undefined) #scope: Default/network-WithLossCell/_backbone-LeNet5
+      # In file /Users/yuan/Code/MachineLearning/lab11/train.py:77/        for layer in self.crp_layers:/#[CNode]48
+    %4 = Primitive::Switch{prim_type=1}(%3, FuncGraph::fg_49, FuncGraph::fg_50)    #(Undefined, Undefined, Undefined)    # fg_49=↻LeNet5.49, fg_50=↓LeNet5.50 #scope: Default/network-WithLossCell/_backbone-LeNet5
+      # In file /Users/yuan/Code/MachineLearning/lab11/train.py:77/        for layer in self.crp_layers:/#[CNode]51
+    %5 = %4() #scope: Default/network-WithLossCell/_backbone-LeNet5
+      # In file /Users/yuan/Code/MachineLearning/lab11/train.py:77/        for layer in self.crp_layers:/#[CNode]52
+    Primitive::Return{prim_type=1}(%5)    #(Undefined) #scope: Default/network-WithLossCell/_backbone-LeNet5
+      # In file /Users/yuan/Code/MachineLearning/lab11/train.py:77/        for layer in self.crp_layers:/#[CNode]53
+}
+# order:
+#   1: @↵LeNet5.27:[CNode]48{[0]: ValueNode<MultitypeFuncGraph> less.54, [1]: @[CNode]28, [2]: [CNode]46}
+#   2: @↵LeNet5.27:[CNode]51{[0]: ValueNode<Primitive> Switch, [1]: [CNode]48, [2]: ValueNode<FuncGraph> ↻LeNet5.49, [3]: ValueNode<FuncGraph> ↓LeNet5.50}
+#   3: @↵LeNet5.27:[CNode]52{[0]: [CNode]51}
+#   4: @↵LeNet5.27:[CNode]53{[0]: ValueNode<Primitive> Return, [1]: [CNode]52}
+
+
+#===============================================================================
+# num of function graphs in stack: 5
